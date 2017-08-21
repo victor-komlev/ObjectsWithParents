@@ -17,10 +17,10 @@ import java.net.URI;
     @Autowired private ObjectTestService objectTestService;
 
     @GetMapping("/testobject/{id}") @ResponseBody public ResponseEntity<Object> getObjectTest(
-            @PathVariable("id") String id, @RequestParam(value = "hierarchy", required = false) String hierarchy,
+            @PathVariable("id") String id,
+            @RequestParam(value = "hierarchy", required = false, defaultValue = "DESC") String hierarchy,
             @RequestParam(value = "depth", required = false) Integer depth) {
         ResponseEntity<Object> responseEntity;
-        hierarchy = !StringUtils.isEmpty(hierarchy) ? hierarchy : "DESC";
         switch (hierarchy) {
         case "ASC":
             responseEntity = new ResponseEntity<>(
@@ -33,12 +33,13 @@ import java.net.URI;
                     HttpStatus.OK);
             break;
         default:
-                responseEntity = ResponseEntity.badRequest().build();
+            responseEntity = ResponseEntity.badRequest().build();
         }
         return responseEntity;
     }
 
-    @PostMapping("/testobject") @ResponseBody public ResponseEntity<Object> saveTestObjects (@RequestBody ObjectTestArrayContainer objects) {
+    @PostMapping("/testobject") @ResponseBody public ResponseEntity<Object> saveTestObjects(
+            @RequestBody ObjectTestArrayContainer objects) {
         objectTestService.saveTestObjects(objects.getObject());
         return ResponseEntity.created(URI.create("")).build();
     }
